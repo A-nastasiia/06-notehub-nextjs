@@ -1,22 +1,15 @@
-
 "use client";
 
-import { useEffect } from "react";
-
-type NoteDetailsErrorProps = {
-  error: Error & { digest?: string };
-  reset: () => void;
+type Props = {
+  error: Error;
 };
 
-export default function NoteDetailsError({ error, reset }: NoteDetailsErrorProps) {
-  useEffect(() => {
-    console.error("Error in /notes/[id] route:", error);
-  }, [error]);
-
+const ErrorMessage = ({ error }: Props) => {
   return (
     <div>
-      <p>Could not fetch note details. {error.message}</p>
-      <button onClick={reset}>Try again</button>
+      <p>Could not fetch the list of notes. {error.message}</p>
     </div>
   );
-}
+};
+
+export default ErrorMessage;
