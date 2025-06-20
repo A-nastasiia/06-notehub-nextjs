@@ -56,14 +56,19 @@ export const deleteNote = async (id: number): Promise<Note> => {
   return response.data;
 };
 
-export async function fetchNoteById(id: number): Promise<Note> {
-  const res = await fetch(`${BASE_URL}/notes/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch note");
-  }
-  return res.json();
-}
+// export async function fetchNoteById(id: number): Promise<Note> {
+//   const res = await fetch(`${BASE_URL}/notes/${id}`, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch note");
+//   }
+//   return res.json();
+// }
+
+export const fetchNoteById = async (id: number): Promise<Note> => {
+  const response = await axiosInstance.get<Note>(`/notes/${id}`);
+  return response.data;
+};
