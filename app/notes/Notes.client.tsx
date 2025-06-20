@@ -1,3 +1,120 @@
+
+'use client';
+
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNotes } from "../../lib/api";
+import { Note } from "../../types/note";
+import { useDebounce } from 'use-debounce';
+
+import css from "./NotesPage.module.css";
+
+interface NotesProps {
+  initialNotes: Note[];
+  initialTotalPages: number;
+  initialPage: number;
+  perPage: number;
+}
+
+const Notes: React.FC<NotesProps> = ({
+  initialNotes,
+  initialTotalPages,
+  initialPage,
+  perPage,
+}) => {
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(initialPage);
+
+  const [debouncedSearch] = useDebounce(search, 500);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: ['notes', { page, perPage, search: debouncedSearch }],
+    queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
+     initialData: {
+    notes: initialNotes,
+    totalPages: initialTotalPages,
+  },
+  });
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value); 
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  if (error) return <p>Error loading notes</p>;
+
+  return (
+    <div className={css.app}>
+
+        {data && data.totalPages > 1 && (
+          <div className={css.pagination}>
+           <button
+               onClick={() => handlePageChange(page - 1)}
+                 disabled={page === 1}
+              className={css.pageButton}
+              >
+              &lt;
+            </button>
+
+             {Array.from({ length: data.totalPages }, (_, i) => (
+            <button
+               key={i + 1}
+              onClick={() => handlePageChange(i + 1)}
+             className={`${css.pageButton} ${page === i + 1 ? css.activePage : ''}`}
+              >
+             {i + 1}
+            </button>
+         ))}
+
+    <button
+      onClick={() => handlePageChange(page + 1)}
+      disabled={page === data.totalPages}
+      className={css.pageButton}
+    >
+      &gt;
+    </button>
+  </div>
+)}
+      <div className={css.toolbar}>
+  <div className={css.left}>
+    <div className={css.titleRow}>
+      <h2 className={css.title}>NoteHub</h2>
+      <button className={css.createButton}>Create note +</button>
+    </div>
+    <input
+      type="text"
+      value={search}
+      onChange={handleSearchChange}
+      placeholder="Search notes"
+      className={css.searchInput}
+    />
+  </div>
+</div>
+
+      {(isLoading || isFetching) && <p>Loading...</p>}
+
+      <div className={css.noteGrid}>
+        {data?.notes.map((note) => (
+          <div key={note.id} className={css.noteCard}>
+            <h3 className={css.noteTitle}>{note.title}</h3>
+            <p className={css.noteContent}>{note.content}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Notes;
+
+
 // 'use client';
 
 // import { useQuery } from '@tanstack/react-query';
@@ -99,81 +216,81 @@
 //   );
 // }
 
-'use client';
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchNotes } from "../../lib/api";
-import { Note } from "../../types/note";
+// 'use client';
+// import React, { useState } from "react";
+// import { useQuery } from "@tanstack/react-query";
+// import { fetchNotes } from "../../lib/api";
+// import { Note } from "../../types/note";
 
-interface NotesProps {
-  initialNotes: Note[];
-  initialTotalPages: number;
-  initialPage: number;
-  perPage: number;
-}
+// interface NotesProps {
+//   initialNotes: Note[];
+//   initialTotalPages: number;
+//   initialPage: number;
+//   perPage: number;
+// }
 
-const Notes: React.FC<NotesProps> = ({
-  initialNotes,
-  initialTotalPages,
-  initialPage,
-  perPage,
-}) => {
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(initialPage);
+// const Notes: React.FC<NotesProps> = ({
+//   initialNotes,
+//   initialTotalPages,
+//   initialPage,
+//   perPage,
+// }) => {
+//   const [search, setSearch] = useState('');
+//   const [page, setPage] = useState(initialPage);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['notes', { page, perPage, search }],
-    queryFn: () => fetchNotes({ page, perPage, search }),
-    initialData: { notes: initialNotes, totalPages: initialTotalPages }
-  });
+//   const { data, isLoading, error } = useQuery({
+//     queryKey: ['notes', { page, perPage, search }],
+//     queryFn: () => fetchNotes({ page, perPage, search }),
+//     initialData: { notes: initialNotes, totalPages: initialTotalPages }
+//   });
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value); 
-  };
+//   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setSearch(e.target.value); 
+//   };
 
-    const handlePageChange = (newPage: number) => {
-    setPage(newPage);};
+//     const handlePageChange = (newPage: number) => {
+//     setPage(newPage);};
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading notes</p>;
+//   if (isLoading) return <p>Loading...</p>;
+//   if (error) return <p>Error loading notes</p>;
 
-  return (
-    <div>
-      <input
-        type="text"
-        value={search}
-        onChange={handleSearchChange} 
-        placeholder="Search notes..."
-      />
-       {data && data.totalPages > 1 && (
-        <div>
-          <button 
-            onClick={() => handlePageChange(page - 1)} 
-            disabled={page <= 1}
-          >
-            Prev
-          </button>
-          <span>Page {page} of {data.totalPages}</span>
-          <button 
-            onClick={() => handlePageChange(page + 1)} 
-            disabled={page >= data.totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+//   return (
+//     <div>
+//       <input
+//         type="text"
+//         value={search}
+//         onChange={handleSearchChange} 
+//         placeholder="Search notes..."
+//       />
+//        {data && data.totalPages > 1 && (
+//         <div>
+//           <button 
+//             onClick={() => handlePageChange(page - 1)} 
+//             disabled={page <= 1}
+//           >
+//             Prev
+//           </button>
+//           <span>Page {page} of {data.totalPages}</span>
+//           <button 
+//             onClick={() => handlePageChange(page + 1)} 
+//             disabled={page >= data.totalPages}
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
 
-      {data?.notes.map((note) => (
-        <div key={note.id}>
-          <h3>{note.title}</h3>
-          <p>{note.content}</p>
-        </div>
-      ))}
-    </div>
-  );
-};
+//       {data?.notes.map((note) => (
+//         <div key={note.id}>
+//           <h3>{note.title}</h3>
+//           <p>{note.content}</p>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
 
-export default Notes;
+// export default Notes;
 
 
 
