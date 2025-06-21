@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-// import { useDebounce } from 'use-debounce';
+import { useDebounce } from 'use-debounce';
 import { fetchNotes } from '@/lib/api';
 // import { Note } from '@/types/note';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -30,7 +30,7 @@ const Notes: React.FC<NotesProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  // const [debouncedSearch] = useDebounce(search, 500);
+  const [debouncedSearch] = useDebounce(search, 500);
 
   //  const { data, isLoading, isFetching, error } = useQuery({
   //   queryKey: ['notes', { page, perPage, search: debouncedSearch }],
@@ -49,9 +49,16 @@ const Notes: React.FC<NotesProps> = ({
 // });
 
 
+// const { data, isLoading, isFetching, error } = useQuery({
+//   queryKey: ['notes', { page, perPage: 12, search }],
+//   queryFn: () => fetchNotes({  page, perPage: 12, search  }),
+//   placeholderData: (prev) => prev,
+//   enabled: true,
+// });
+
 const { data, isLoading, isFetching, error } = useQuery({
-  queryKey: ['notes', { page, perPage: 12, search }],
-  queryFn: () => fetchNotes({  page, perPage: 12, search  }),
+  queryKey: ['notes', { page, perPage: 12, search: debouncedSearch }],
+  queryFn: () => fetchNotes({ page, perPage: 12, search: debouncedSearch }),
   placeholderData: (prev) => prev,
   enabled: true,
 });
