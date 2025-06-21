@@ -5,27 +5,39 @@ import css from "./NoteModal.module.css";
 import { NoteForm } from "../NoteForm/NoteForm";
 
 interface NoteModalProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ onClose }) => {
+const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
 
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    window.addEventListener("keydown", handleEsc);
+
+    if (isOpen) {
+      window.addEventListener("keydown", handleEsc);
+    } else {
+      window.removeEventListener("keydown", handleEsc);
+    }
 
     return () => {
-      document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, [isOpen, onClose]); 
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
+
+  if (!isOpen) return null;
 
   return createPortal(
     <div

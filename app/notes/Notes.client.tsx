@@ -1,13 +1,17 @@
 
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchNotes } from "../../lib/api";
-import { Note } from "../../types/note";
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
+import { fetchNotes } from '@/lib/api';
+import { Note } from '@/types/note';
+import SearchBox from '@/components/SearchBox/SearchBox';
+import Pagination from '@/components/Pagination/Pagination';
+import NoteList from '@/components/NoteList/NoteList';
+import NoteModal from '@/components/NoteModal/NoteModal';
 
-import css from "./NotesPage.module.css";
+import css from './NotesPage.module.css';
 
 interface NotesProps {
   initialNotes: Note[];
@@ -24,96 +28,83 @@ const Notes: React.FC<NotesProps> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(initialPage);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch]);
-
-  const { data, isLoading, error, isFetching } = useQuery({
+   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ['notes', { page, perPage, search: debouncedSearch }],
     queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
-     initialData: {
-    notes: initialNotes,
-    totalPages: initialTotalPages,
-  },
+    initialData: {
+      notes: initialNotes,
+      totalPages: initialTotalPages,
+    },
+    keepPreviousData: true,
   });
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value); 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1); 
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
-  if (error) return <p>Error loading notes</p>;
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (error) return <p>Помилка при завантаженні нотаток</p>;
 
   return (
     <div className={css.app}>
-
-        {data && data.totalPages > 1 && (
-          <div className={css.pagination}>
-           <button
-               onClick={() => handlePageChange(page - 1)}
-                 disabled={page === 1}
-              className={css.pageButton}
-              >
-              &lt;
-            </button>
-
-             {Array.from({ length: data.totalPages }, (_, i) => (
-            <button
-               key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
-             className={`${css.pageButton} ${page === i + 1 ? css.activePage : ''}`}
-              >
-             {i + 1}
-            </button>
-         ))}
-
-    <button
-      onClick={() => handlePageChange(page + 1)}
-      disabled={page === data.totalPages}
-      className={css.pageButton}
-    >
-      &gt;
-    </button>
-  </div>
-)}
       <div className={css.toolbar}>
-  <div className={css.left}>
-    <div className={css.titleRow}>
-      <h2 className={css.title}>NoteHub</h2>
-      <button className={css.createButton}>Create note +</button>
-    </div>
-    <input
-      type="text"
-      value={search}
-      onChange={handleSearchChange}
-      placeholder="Search notes"
-      className={css.searchInput}
-    />
-  </div>
-</div>
-
-      {(isLoading || isFetching) && <p>Loading...</p>}
-
-      <div className={css.noteGrid}>
-        {data?.notes.map((note) => (
-          <div key={note.id} className={css.noteCard}>
-            <h3 className={css.noteTitle}>{note.title}</h3>
-            <p className={css.noteContent}>{note.content}</p>
+        <div className={css.left}>
+          <div className={css.titleRow}>
+            <h2 className={css.title}>NoteHub</h2>
+            <button onClick={handleOpenModal} className={css.createButton}>
+              Create note +
+            </button>
           </div>
-        ))}
+
+          <SearchBox
+            value={search}
+            onChange={handleSearchChange}
+            onSearch={() => {}}
+            placeholder="Search notes..."
+          />
+        </div>
       </div>
+
+      {(isLoading || isFetching) && <p>Завантаження...</p>}
+
+      <NoteList notes={data?.notes ?? []} isLoading={isLoading || isFetching} />
+
+      {data?.totalPages > 1 && (
+        <Pagination
+          currentPage={page}
+          totalPages={data.totalPages}
+          pageCount={data.totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
+          {isClient && <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} />}
+      {/* <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
   );
 };
 
 export default Notes;
-
 
 // 'use client';
 

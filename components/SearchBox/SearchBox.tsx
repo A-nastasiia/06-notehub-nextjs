@@ -7,6 +7,7 @@ interface SearchBoxProps {
   value: string;
   onSearch: (searchText: string) => void;
   onChange: (newValue: string) => void;
+  placeholder?: string;
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({ value, onSearch, onChange }) => {
