@@ -5,7 +5,7 @@ import css from "./NoteModal.module.css";
 import { NoteForm } from "../NoteForm/NoteForm";
 
 interface NoteModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
 }
 

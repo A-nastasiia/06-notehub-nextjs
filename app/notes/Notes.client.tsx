@@ -34,7 +34,7 @@ const Notes: React.FC<NotesProps> = ({
 
 
 const { data, isLoading, isFetching, error } = useQuery({
-  queryKey: ['notes', { page, perPage, search: debouncedSearch }],
+  queryKey: ['notes',page, debouncedSearch ],
   queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
   initialData: {
     notes: initialNotes,
@@ -107,13 +107,14 @@ const { data, isLoading, isFetching, error } = useQuery({
 {totalPages > 1 && (
   <Pagination
     currentPage={page}
-    totalPages={totalPages}
+    // totalPages={totalPages}
     pageCount={totalPages}
     onPageChange={handlePageChange}
   />
 )}
 
-           <NoteModal isOpen={isModalOpen}  onClose={handleCloseModal} />
+          {isModalOpen && ( <NoteModal onClose={handleCloseModal} />
+          )}
           {/* {isClient && <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} />} */}
       {/* <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
