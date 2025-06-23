@@ -4,13 +4,13 @@ import React, { type ChangeEvent } from "react";
 import css from "./SearchBox.module.css";
 
 interface SearchBoxProps {
-  value: string;
+  // value: string;
   // onSearch: (searchText: string) => void;
   onChange: (newValue: string) => void;
   placeholder?: string;
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange, placeholder  }) => {
+const SearchBox: React.FC<SearchBoxProps> = ({ onChange, placeholder  }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
@@ -24,7 +24,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange, placeholder  }) 
       className={css.input}
       type="text"
       placeholder= { placeholder || "Search notes" }
-      value={value}
       onChange={handleChange}
       autoComplete="off"
     />

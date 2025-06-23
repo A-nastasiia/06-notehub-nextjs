@@ -4,7 +4,7 @@ import ReactPaginate from "react-paginate";
 import css from "./Pagination.module.css";
 
 interface PaginationProps {
-  pageCount: number;
+  totalPages: number;
   currentPage: number;
   onPageChange: (selectedPage: number) => void;
 
@@ -16,7 +16,7 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({
-  pageCount,
+  totalPages,
   currentPage,
   onPageChange,
   nextLabel = "→",
@@ -29,7 +29,7 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange(selectedItem.selected + 1);
   };
 
-  if (pageCount <= 1) return null;
+  if (totalPages <= 1) return null;
 
   return (
     <ReactPaginate
@@ -37,7 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({
       nextLabel={nextLabel}
       onPageChange={handlePageChange}
       pageRangeDisplayed={pageRangeDisplayed}
-      pageCount={pageCount}
+      pageCount={totalPages}
       previousLabel={previousLabel}
       forcePage={currentPage - 1} 
       containerClassName={css.pagination}

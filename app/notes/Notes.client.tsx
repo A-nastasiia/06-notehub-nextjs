@@ -28,12 +28,11 @@ const Notes: React.FC<NotesProps> = ({
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(initialPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [isClient, setIsClient] = useState(false);
 
   const [debouncedSearch] = useDebounce(search, 500);
 
 
-const { data, isLoading, isFetching, error } = useQuery({
+const { data, isFetching, error } = useQuery({
   queryKey: ['notes',page, debouncedSearch ],
   queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
   initialData: {
@@ -77,7 +76,7 @@ const { data, isLoading, isFetching, error } = useQuery({
           </div>
 
           <SearchBox
-            value={search}
+            // value={search}
             onChange={handleSearchChange}
             // onSearch={() => {}}
             placeholder="Search notes..."
@@ -85,38 +84,25 @@ const { data, isLoading, isFetching, error } = useQuery({
         </div>
       </div>
 
-      {(isLoading || isFetching) && <p>Завантаження...</p>}
+      {(isFetching) && <p>Завантаження...</p>}
 
        {data?.notes?.length > 0 && (
-        <NoteList notes={data.notes} isLoading={isLoading || isFetching} />
+        <NoteList notes={data.notes} />
       )}
-
-      {/* <NoteList notes={data?.notes ?? []} isLoading={isLoading || isFetching} /> */}
-
-      {/* {data && data.totalPages > 1 && (
-        <Pagination
-          currentPage={page}
-          totalPages={data.totalPages}
-          pageCount={data.totalPages}
-          onPageChange={handlePageChange}
-        />
-      )} */}
 
         
 
 {totalPages > 1 && (
   <Pagination
     currentPage={page}
-    // totalPages={totalPages}
-    pageCount={totalPages}
+    totalPages={totalPages}
+    // pageCount={totalPages}
     onPageChange={handlePageChange}
   />
 )}
 
           {isModalOpen && ( <NoteModal onClose={handleCloseModal} />
           )}
-          {/* {isClient && <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} />} */}
-      {/* <NoteModal isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
   );
 };
