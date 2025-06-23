@@ -1,6 +1,3 @@
-
-const Loading = () => {
+export default function GlobalLoading() {
   return <p>Loading, please wait...</p>;
-};
-
-export default Loading;
+}

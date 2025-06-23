@@ -1,15 +1,18 @@
 "use client";
 
-type Props = {
+import { useEffect } from "react";
+
+interface ErrorProps {
   error: Error;
-};
+  reset: () => void;
+}
 
-const ErrorMessage = ({ error }: Props) => {
+export default function NoteDetailsError({ error }: ErrorProps) {
+  useEffect(() => {
+    console.error("Note details error:", error);
+  }, [error]);
+
   return (
-    <div>
-      <p>Could not fetch the list of notes. {error.message}</p>
-    </div>
+    <p>Could not fetch note details. {error.message}</p>
   );
-};
-
-export default ErrorMessage;
+}
