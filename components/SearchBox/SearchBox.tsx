@@ -4,8 +4,8 @@ import React, { type ChangeEvent } from "react";
 import css from "./SearchBox.module.css";
 
 interface SearchBoxProps {
-  // value: string;
-  // onSearch: (searchText: string) => void;
+  value: string;
+  onSearch: (searchText: string) => void;
   onChange: (newValue: string) => void;
   placeholder?: string;
 }
