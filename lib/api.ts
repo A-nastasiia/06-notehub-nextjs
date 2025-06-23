@@ -20,7 +20,7 @@ interface CreateNoteData {
 
 interface FetchNotesParams {
   page: number;
-
+  perPage?: number;
   search?: string;
 }
 

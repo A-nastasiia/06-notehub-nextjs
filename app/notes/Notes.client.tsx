@@ -64,6 +64,9 @@ const Notes: React.FC<NotesProps> = ({
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
+   if (isLoading) return <p className={css.status}>Loading...</p>;
+  if (isError) return <ErrorMessage error={error} />;
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
@@ -85,10 +88,7 @@ const Notes: React.FC<NotesProps> = ({
           Create Note +
         </button>
       </header>
-
-      {isLoading && <p className={css.status}>Loading...</p>}
-      {isError && error && <ErrorMessage error={error} />}
-
+      
       {data && <NoteList notes={data.notes} />}
 
       {isModalOpen && <NoteModal onClose={closeModal} />}
